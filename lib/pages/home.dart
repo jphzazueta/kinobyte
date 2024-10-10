@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kino_byte/pages/debouncer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:kino_byte/services/databaseService.dart';
 
 class MovieInfo {
   String title;
@@ -35,6 +36,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  final DatabaseService _databaseService = DatabaseService.instance;
   
   List<MovieInfo> movies_watched = [
     MovieInfo(title: 'Before Sunset', dateTimeWatched: '29.08.2024', year: 2004, platform: 'digital copy', place: 'home', screenType: 'laptop', imageUrl: 'https://m.media-amazon.com/images/M/MV5BMTQ1MjAwNTM5Ml5BMl5BanBnXkFtZTYwNDM0MTc3._V1_.jpg'),
@@ -57,10 +60,8 @@ class _HomeState extends State<Home> {
     super.initState();
   }
   String textInput = '';
-  final String apiKey = '1befb2ea0a11e04930e86426dbfc01c1';  // Replace with your TMDb API key
-  // final String apiUrl = 'https://api.themoviedb.org/3/movie/popular';
+  final String apiKey = '1befb2ea0a11e04930e86426dbfc01c1';
   final String apiUrl = 'https://api.themoviedb.org/3/search/movie';
-  // 'https://api.themoviedb.org/3/search/movie?query=Jack+Reacher&api_key=API_KEY'
 
   Future<List<MovieInfo>> fetchMovies(String textInput) async {
     String encodedInput = Uri.encodeQueryComponent(textInput);
@@ -69,7 +70,7 @@ class _HomeState extends State<Home> {
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
-      print(jsonResponse);
+      // print(jsonResponse);
       final List movies = jsonResponse['results'];
 
       // Convert each item in the list to a Movie object
@@ -97,37 +98,7 @@ class _HomeState extends State<Home> {
           IconButton(
             color: Colors.white,
             onPressed: () {
-              setState(() {
-                if (customIcon.icon == Icons.search) {
-                  customIcon = const Icon(Icons.cancel);
-                  customSearchBar = TextField(
-                    onChanged: (query) {
-                      _debouncer.run(() {
-                        fetchMovies(query);
-                      });
-                    },
-                    textInputAction: TextInputAction.go,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Search movie',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[400],
-                      )
-                    ),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16.0,
-                    )
-                  );
-                }
-                else {
-                  customIcon = const Icon(Icons.search);
-                  customSearchBar = const Text('My Watched Movies',
-                             style: TextStyle(
-                              color: Colors.white,
-                                fontWeight: FontWeight.bold,));
-                }
-              });
+              Navigator.pushNamed(context, '/search');
             },
             icon: customIcon,
           )

@@ -8,8 +8,9 @@ void main() => runApp(MaterialApp(
     initialRoute: '/',
     routes: {
       // '/': (context) => Loading(),
-      '/': (context) => Home(),
-      // 'location': (context) => Movie(),
+      '/': (context) => const Home(),
+      '/search': (context) => const SearchPage(),
+      '/movie': (context) => Movie(),
     }
   ));
 
