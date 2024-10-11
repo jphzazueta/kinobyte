@@ -1,9 +1,9 @@
 enum ScreenType {
-  car('Car'),
+  car('Car screen'),
   laptop('Laptop'),
   monitor('Monitor'),
   phone('Phone'),
-  plane('Plane'),
+  plane('Plane screen'),
   projector('Projector'),
   tv('TV'),
   other('Other');
@@ -46,5 +46,20 @@ enum MovieLanguage {
   other('Other');
 
   const MovieLanguage(this.label);
+  final String label;
+}
+
+enum Location {
+  home('Home'),
+  cinema('Cinema'),
+  car('Car'),
+  family('Familys'),
+  friend('Friends'),
+  hotel('Hotel'),
+  plane('Plane'),
+  school('School'),
+  other('Other');
+
+  const Location(this.label);
   final String label;
 }

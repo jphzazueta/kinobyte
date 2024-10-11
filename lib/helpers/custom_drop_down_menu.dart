@@ -16,7 +16,10 @@ class AddMovieDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownMenu(
       hintText: 'Select',
-      menuStyle: const MenuStyle(backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 23, 23, 70),),),
+      menuStyle: const MenuStyle(backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 23, 23, 70),), 
+        alignment: Alignment.bottomLeft,
+        ),
+      menuHeight: 400,
       textStyle: const TextStyle(color: Colors.white,),
       inputDecorationTheme: InputDecorationTheme(
         isDense: true,

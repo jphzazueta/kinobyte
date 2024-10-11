@@ -95,10 +95,8 @@ class _SearchPageState extends State<SearchPage> {
                     'movie_id': movies![index].movieId,
                     'title': movies![index].title,
                     'release_date': movies![index].year,
-                    'runtime': movies![index].runtime,
                     });
                     print('THE MOVIE YEAR IS: ${movies![index].year}');
-                    print('THE RUNTIME OF THE MOVIE IS: ${movies![index].runtime}');
                 },
               )
             ),

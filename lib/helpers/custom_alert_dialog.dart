@@ -9,9 +9,11 @@ import 'package:kino_byte/helpers/custom_drop_down_menu.dart';
 class CustomAlertDialog extends StatefulWidget {
   final ValueKey valueKey;
   final DatabaseService databaseService;
-  final  Map<String, dynamic> movieData;
+  final Map<String, dynamic> movieDetails;
+  final DateTime? selectedDateTime;
   Platform? selectedPlatform;
   ScreenType? selectedScreenType;
+  Location? selectedLocation;
   MovieLanguage? selectedAudioLanguage;
   MovieLanguage? selectedSubstitlesLanguage;
 
@@ -19,9 +21,11 @@ class CustomAlertDialog extends StatefulWidget {
     super.key,
     required this.valueKey,
     required this.databaseService,
-    required this.movieData,
+    required this.movieDetails,
+    this.selectedDateTime,
     required this.selectedPlatform,
     required this.selectedScreenType,
+    required this.selectedLocation,
     required this.selectedAudioLanguage,
     required this.selectedSubstitlesLanguage,
   });
@@ -82,14 +86,33 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              const Text('Location', style: TextStyle(fontSize: 16.0, color: Colors.white, fontWeight: FontWeight.bold)),
+              AddMovieDropdown(
+                hintText: 'Select', 
+                entries: Location.values.map(
+                  (Location location) {
+                    return DropdownMenuEntry(
+                      value: location, 
+                      label: location.label,
+                      style: MenuItemButton.styleFrom(foregroundColor: Colors.white),);
+                  }
+                ).toList(),
+                onSelectedFunction: (value) => widget.selectedLocation = value,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               const Text('Audio\nLanguage', style: TextStyle(fontSize: 16.0, color: Colors.white, fontWeight: FontWeight.bold)),
               AddMovieDropdown(
                 hintText: 'Select', 
                 entries: MovieLanguage.values.map(
                   (MovieLanguage movieLanguage) {
                     return DropdownMenuEntry(
-                      value: movieLanguage, label: 
-                      movieLanguage.label,
+                      value: movieLanguage, 
+                      label: movieLanguage.label,
                       style: MenuItemButton.styleFrom(foregroundColor: Colors.white),);
                   }
                 ).toList(),
@@ -125,7 +148,29 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
         ),
         TextButton(
           onPressed: () {
-            widget.databaseService.addVisualization(widget.valueKey, widget.movieData, widget.selectedPlatform, widget.selectedScreenType, widget.selectedAudioLanguage, widget.selectedSubstitlesLanguage);
+            if (widget.valueKey.value == 'another_time'){
+             widget.databaseService.addVisualization(
+                widget.valueKey, 
+                widget.movieDetails, 
+                widget.selectedPlatform, 
+                widget.selectedScreenType, 
+                widget.selectedLocation,
+                widget.selectedAudioLanguage, 
+                widget.selectedSubstitlesLanguage,
+                widget.selectedDateTime,
+              );
+            }
+            else{
+              widget.databaseService.addVisualization(
+                widget.valueKey, 
+                widget.movieDetails, 
+                widget.selectedPlatform, 
+                widget.selectedScreenType, 
+                widget.selectedLocation,
+                widget.selectedAudioLanguage, 
+                widget.selectedSubstitlesLanguage
+              );
+            }
             Navigator.pop(context, 'Accept');
             },
           child: const Text('Accept'),

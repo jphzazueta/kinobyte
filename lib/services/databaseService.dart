@@ -20,6 +20,7 @@ class DatabaseService {
   static const String _visualizationsDatetimeWatchedColumnName = 'datetime_watched';
   static const String _visualizationsScreenTypeColumnName = 'screen_type';
   static const String _visualizationsPlatformColumnName = 'platform';
+  static const String _visualizationsLocationColumnName = 'location';
   static const String _visualizationsAudioLanguageColumnName = 'audio_language';
   static const String _visualizationsSubstitlesLanguageColumnName = 'subtitles_language';
 
@@ -47,6 +48,7 @@ class DatabaseService {
             $_visualizationsDatetimeWatchedColumnName INTEGER NOT NULL,
             $_visualizationsScreenTypeColumnName TEXT,
             $_visualizationsPlatformColumnName TEXT,
+            $_visualizationsLocationColumnName TEXT,
             $_visualizationsAudioLanguageColumnName TEXT,
             $_visualizationsSubstitlesLanguageColumnName TEXT
           )
@@ -72,19 +74,21 @@ class DatabaseService {
 
   void addVisualization(
     ValueKey speedDialChildKey,
-    Map<String, dynamic> movieData, 
+    Map<String, dynamic> movieDetails, 
     Platform? platform, 
     ScreenType? screenType, 
+    Location? location,
     MovieLanguage? audioLanguage, 
-    MovieLanguage? substitlesLanguage
+    MovieLanguage? substitlesLanguage,
+    [DateTime? selectedDateTime]
   ) async {
     final db = await database;
     await db.insert(
       _watchedMoviesTableName,  
       {
-        _watchedMoviesTitleColumnName: movieData['title'],
-        _watchedMoviesYearColumnName: int.parse(movieData['release_date'].substring(0,4)),
-        _watchedMoviesMovieDbIdColumnName: movieData['movie_id'],
+        _watchedMoviesTitleColumnName: movieDetails['title'],
+        _watchedMoviesYearColumnName: int.parse(movieDetails['release_date'].substring(0,4)),
+        _watchedMoviesMovieDbIdColumnName: movieDetails['id'],
       },
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
@@ -92,7 +96,7 @@ class DatabaseService {
     final movieId = await db.query(_watchedMoviesTableName,   // query movie_id from table watched_movies 
           columns: [_watchedMoviesIdColumnName],              // result is a list with a single map, with a single key-value pair
           where: '$_watchedMoviesMovieDbIdColumnName = ?',
-          whereArgs: [movieData['movie_id'],],
+          whereArgs: [movieDetails['id'],],
         );
 
     int dateTime;
@@ -101,11 +105,11 @@ class DatabaseService {
       print('JUST STARTED WATCHING THE MOVIE');
     }
     else if (speedDialChildKey.value == 'just_finished') {
-      dateTime = (DateTime.now().millisecondsSinceEpoch - movieData['runtime']*60*1000).toInt();
+      dateTime = (DateTime.now().millisecondsSinceEpoch - movieDetails['runtime']*60*1000).toInt();
       print('JUST FINISHED WATCHING THE MOVIE');
     }
     else {
-      dateTime = DateTime.now().millisecondsSinceEpoch;
+      dateTime = selectedDateTime!.millisecondsSinceEpoch;
       print('JUST ADDED A NEW MOVIE TO MY VISUALIZATIONS LIST');
     }
 
@@ -116,6 +120,7 @@ class DatabaseService {
         _visualizationsDatetimeWatchedColumnName: dateTime,
         _visualizationsPlatformColumnName: platform?.label,
         _visualizationsScreenTypeColumnName: screenType?.label,
+        _visualizationsLocationColumnName: location?.label,
         _visualizationsAudioLanguageColumnName: audioLanguage?.label,
         _visualizationsSubstitlesLanguageColumnName: substitlesLanguage?.label,
       }
