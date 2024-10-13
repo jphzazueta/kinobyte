@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'package:kino_byte/pages/movie.dart';
-import 'package:kino_byte/pages/debouncer.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:kino_byte/services/databaseService.dart';
+import 'package:intl/intl.dart';
+import 'package:kino_byte/helpers/info_field.dart';
 
 class MovieInfo {
   String title;
@@ -55,10 +56,6 @@ class _HomeState extends State<Home> {
                               color: Colors.white,
                                 fontWeight: FontWeight.bold,));
 
-  @override
-  void initState() {
-    super.initState();
-  }
   String textInput = '';
   final String apiKey = '1befb2ea0a11e04930e86426dbfc01c1';
   final String apiUrl = 'https://api.themoviedb.org/3/search/movie';
@@ -80,96 +77,277 @@ class _HomeState extends State<Home> {
     }
   }
 
+  late Future<List<Map<String, dynamic>>> _watchedMoviesFuture;
+  @override
+  void initState() {
+    super.initState();
+    _watchedMoviesFuture = _databaseService.getMoviesWatched;
+  }
+
+  void _refreshMoviesList() {
+    setState(() {
+      _watchedMoviesFuture = _databaseService.getMoviesWatched;
+    });
+  }
+
   double dataFontSize = 14.0;
   Color dataFontColor = Colors.grey[300]!;
-  final Debouncer _debouncer = Debouncer(milliseconds: 500);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF06062B),
-      
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 113, 23, 146),
-        title:  Padding(
-          padding: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
-          child: customSearchBar,
-        ),
-        actions: [
-          IconButton(
-            color: Colors.white,
-            onPressed: () {
-              Navigator.pushNamed(context, '/search');
-            },
-            icon: customIcon,
-          )
-        ]
-      ),
-
-      body: ListView.builder(
-        // shrinkWrap: true,
-        itemCount: movies_watched.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: const Color.fromARGB(255, 23, 23, 70),
-              ),
-
-              child: Row(
-                children: [
-                  const SizedBox(width: 10.0),
-                  Expanded(
-                    flex: 3,
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Image.network(movies_watched[index].imageUrl),
-                    )
-                    ),
-                  const SizedBox(width: 20.0),
-                  Expanded(
-                    flex: 9,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('${movies_watched[index].title} (${movies_watched[index].year})',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18.0,
-                          )),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 0.0),
-                          child: Text('Watched: ${movies_watched[index].dateTimeWatched}',
-                            style: TextStyle(
-                              color: dataFontColor,
-                              fontSize: dataFontSize,
-                            )),
-                        ),
-                        Text('Platform: ${movies_watched[index].platform}',
-                          style: TextStyle(
-                            color: dataFontColor,
-                            fontSize: dataFontSize,
-                          )),
-                        Text('Place: ${movies_watched[index].place}',
-                            style: TextStyle(
-                              color: dataFontColor,
-                              fontSize: dataFontSize,
-                            )),
-                        Text('Screen: ${movies_watched[index].screenType}',
-                            style: TextStyle(
-                              color: dataFontColor,
-                              fontSize: dataFontSize,
-                            )),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _watchedMoviesFuture,
+      builder: (context, snapshot) {
+        if (snapshot.hasError){
+          return const Scaffold(
+            body: Center(
+              child: Text('THERE IS AN ERROR',
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),),
+            )
           );
-        },
-      )
+        }
+
+        final watchedMoviesList = snapshot.data;
+        int itemCount = watchedMoviesList?.length ?? 0;
+
+        if (itemCount == 0){
+          return Scaffold(
+            backgroundColor: const Color(0xFF06062B),
+            appBar: AppBar(
+              backgroundColor: const Color.fromARGB(255, 113, 23, 146),
+              title:  Padding(
+                padding: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                child: customSearchBar,
+              ),
+              actions: [
+                IconButton(
+                  color: Colors.white,
+                  onPressed: () async {
+                    await Navigator.pushNamed(context, '/search');
+                    _refreshMoviesList();
+                  },
+                  icon: customIcon,
+                )
+              ]
+            ),
+            body: const Center(
+              child: Text('May the films be with you... eventually.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  letterSpacing: 3,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w800,
+                  fontFamily: 'NewsGothic',
+                   
+            ))),
+          );
+        }
+        else{
+          return Scaffold(
+            backgroundColor: const Color(0xFF06062B),
+            appBar: AppBar(
+              backgroundColor: const Color.fromARGB(255, 113, 23, 146),
+              title:  Padding(
+                padding: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                child: customSearchBar,
+              ),
+              actions: [
+                IconButton(
+                  color: Colors.white,
+                  onPressed: () async {
+                    await Navigator.pushNamed(context, '/search');
+                    _refreshMoviesList();
+                    // setState((){});r
+                  },
+                  icon: customIcon,
+                )
+              ]
+            ),
+            body: ListView.builder(
+              itemCount: itemCount,
+              itemBuilder: (context, index) {
+                return Padding(
+                  // key: ValueKey(watchedMoviesList![index]['id']),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: const Color.fromARGB(255, 23, 23, 70),
+                    ),
+          
+                    child: Slidable(
+                      endActionPane: ActionPane(
+                    motion: const BehindMotion(), 
+                    children: [
+                      SlidableAction(
+                        icon: Icons.delete,
+                        backgroundColor: Colors.red,
+                        onPressed: ((context) {
+                          // print('---------------- MOVIE DELETED -------------------');
+                          // print('MOVIE ID: ${watchedMoviesList![index]['movie_id']} ${watchedMoviesList[index]['movie_id'].runtimeType}');
+                          // print('VISUALIZATION ID: ${watchedMoviesList[index]['vis_id']} ${watchedMoviesList[index]['vis_id'].runtimeType}');
+                          _databaseService.removeVisualization(watchedMoviesList![index]['movie_id'], watchedMoviesList[index]['vis_id']);
+                          _refreshMoviesList();
+                        })
+                      )
+                    ]
+                  ),
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 10.0),
+                          Expanded(
+                            flex: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Image.network(
+                                'https://image.tmdb.org/t/p/w200${watchedMoviesList![index]['poster_path']}'
+                              ),
+                            )
+                            ),
+                          const SizedBox(width: 20.0),
+                          Expanded(
+                            flex: 9,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 5.0),
+                                  child: Text('${watchedMoviesList[index]['movie_title']} (${watchedMoviesList[index]['year']})',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      height: 0.0,
+                                    )),
+                                ),
+                                InfoField(
+                                  fieldName: 'Watched', 
+                                  fieldData: DateFormat('dd.MM.yyyy - kk:mm')
+                                    .format(DateTime
+                                    .fromMillisecondsSinceEpoch(watchedMoviesList[index]['datetime_watched']))
+                                    .toString()
+                                ),
+                                InfoField(
+                                  fieldName: 'Platform', 
+                                  fieldData: '${watchedMoviesList[index]['platform'] ?? 'n/a'}',
+                                ),
+                                InfoField(
+                                  fieldName: 'Location',
+                                  fieldData: '${watchedMoviesList[index]['location'] ?? 'n/a'}',
+                                ),
+                                InfoField(
+                                  fieldName: 'Screen type', 
+                                  fieldData: '${watchedMoviesList[index]['screen_type'] ?? 'n/a'}',
+                                ),
+                                InfoField(
+                                  fieldName: 'Audio Lang', 
+                                  fieldData: '${watchedMoviesList[index]['audio_language'] ?? 'n/a'}',
+                                ),
+                                InfoField(
+                                  fieldName: 'Subtitles Lang', 
+                                  fieldData: '${watchedMoviesList[index]['subtitles_language'] ?? 'n/a'}',
+                                ),
+                                // Text('Watched: ${DateFormat('dd.MM.yyyy - kk:mm').format(DateTime.fromMillisecondsSinceEpoch(watchedMoviesList[index]['datetime_watched']))}',
+                                //   style: TextStyle(
+                                //     color: dataFontColor,
+                                //     fontSize: dataFontSize,
+                                // )),
+                                // Text('Platform: ${watchedMoviesList[index]['platform'] ?? 'n/a'}',
+                                //   style: TextStyle(
+                                //     color: dataFontColor,
+                                //     fontSize: dataFontSize,
+                                // )),
+                                // Text('Location: ${watchedMoviesList[index]['location'] ?? 'n/a'}',
+                                //     style: TextStyle(
+                                //       color: dataFontColor,
+                                //       fontSize: dataFontSize,
+                                //   )),
+                                // Text('Screen type: ${watchedMoviesList[index]['screen_type'] ?? 'n/a'}',
+                                //   style: TextStyle(
+                                //     color: dataFontColor,
+                                //     fontSize: dataFontSize,
+                                // )),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            )
+          
+            // body: ListView.builder(
+            //   itemCount: movies_watched.length,
+            //   itemBuilder: (context, index) {
+            //     return Padding(
+            //       padding: const EdgeInsets.all(8.0),
+            //       child: Container(
+            //         decoration: BoxDecoration(
+            //           borderRadius: BorderRadius.circular(20),
+            //           color: const Color.fromARGB(255, 23, 23, 70),
+            //         ),
+          
+            //         child: Row(
+            //           children: [
+            //             const SizedBox(width: 10.0),
+            //             Expanded(
+            //               flex: 3,
+            //               child: Padding(
+            //                 padding: const EdgeInsets.all(5.0),
+            //                 child: Image.network(movies_watched[index].imageUrl),
+            //               )
+            //               ),
+            //             const SizedBox(width: 20.0),
+            //             Expanded(
+            //               flex: 9,
+            //               child: Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   Text('${movies_watched[index].title} (${movies_watched[index].year})',
+            //                     style: const TextStyle(
+            //                       color: Colors.white,
+            //                       fontSize: 18.0,
+            //                     )),
+            //                   Padding(
+            //                     padding: const EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 0.0),
+            //                     child: Text('Watched: ${movies_watched[index].dateTimeWatched}',
+            //                       style: TextStyle(
+            //                         color: dataFontColor,
+            //                         fontSize: dataFontSize,
+            //                       )),
+            //                   ),
+            //                   Text('Platform: ${movies_watched[index].platform}',
+            //                     style: TextStyle(
+            //                       color: dataFontColor,
+            //                       fontSize: dataFontSize,
+            //                     )),
+            //                   Text('Place: ${movies_watched[index].place}',
+            //                       style: TextStyle(
+            //                         color: dataFontColor,
+            //                         fontSize: dataFontSize,
+            //                       )),
+            //                   Text('Screen: ${movies_watched[index].screenType}',
+            //                       style: TextStyle(
+            //                         color: dataFontColor,
+            //                         fontSize: dataFontSize,
+            //                       )),
+            //                 ],
+            //               ),
+            //             )
+            //           ],
+            //         ),
+            //       ),
+            //     );
+            //   },
+            // )
+          );
+        }
+      }
     );
   }
 }

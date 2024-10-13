@@ -43,6 +43,7 @@ dependencies:
   flutter_speed_dial: ^7.0.0
   sqflite: ^2.3.3+2
   path: ^1.9.0
+  flutter_slidable: ^3.1.1
 
 dev_dependencies:
   flutter_test:
@@ -81,7 +82,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
+  fonts:
+    - family: NewsGothic
+      fonts:
+      - asset: assets/News_Gothic_Bold.ttf
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

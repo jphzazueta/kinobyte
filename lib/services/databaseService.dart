@@ -13,6 +13,7 @@ class DatabaseService {
   static const String _watchedMoviesTitleColumnName = 'movie_title';
   static const String _watchedMoviesYearColumnName = 'year';
   static const String _watchedMoviesMovieDbIdColumnName = 'movie_db_id';
+  static const String _watchedMoviesPosterPathColumnName = 'poster_path';
 
   static const String _visualizationsTableName = 'visualizations';
   static const String _visualizationsIdColumnName = 'id';
@@ -38,7 +39,8 @@ class DatabaseService {
           $_watchedMoviesIdColumnName INTEGER PRIMARY KEY,
           $_watchedMoviesTitleColumnName TEXT NOT NULL,
           $_watchedMoviesYearColumnName INTEGER NOT NULL,
-          $_watchedMoviesMovieDbIdColumnName INTEGER UNIQUE NOT NULL
+          $_watchedMoviesMovieDbIdColumnName INTEGER UNIQUE NOT NULL,
+          $_watchedMoviesPosterPathColumnName TEXT
         )
         ''');
         db.execute('''
@@ -72,6 +74,36 @@ class DatabaseService {
     return database;
   }
 
+  Future<List<Map<String, dynamic>>> get getMoviesWatched async{
+    final db = await database;
+    dynamic movies = db.rawQuery(
+      '''SELECT 
+      $_watchedMoviesTableName.$_watchedMoviesIdColumnName AS movie_id,
+      $_visualizationsTableName.$_visualizationsIdColumnName AS vis_id,
+      $_watchedMoviesTableName.$_watchedMoviesTitleColumnName AS movie_title,
+      $_watchedMoviesTableName.$_watchedMoviesYearColumnName AS year,
+      $_visualizationsTableName.$_visualizationsDatetimeWatchedColumnName AS datetime_watched,
+      $_visualizationsTableName.$_visualizationsPlatformColumnName AS platform,
+      $_visualizationsTableName.$_visualizationsLocationColumnName AS location,
+      $_visualizationsTableName.$_visualizationsScreenTypeColumnName AS screen_type,
+      $_visualizationsTableName.$_visualizationsAudioLanguageColumnName AS audio_language,
+      $_visualizationsTableName.$_visualizationsSubstitlesLanguageColumnName AS subtitles_language,
+      $_watchedMoviesTableName.$_watchedMoviesPosterPathColumnName AS poster_path
+      FROM $_watchedMoviesTableName JOIN $_visualizationsTableName
+      ON $_visualizationsTableName.$_visualizationsMovieIdColumnName 
+      = $_watchedMoviesTableName.$_watchedMoviesIdColumnName
+      ORDER BY $_visualizationsTableName.$_visualizationsDatetimeWatchedColumnName DESC
+      '''
+      );
+    // print(movies);
+    // print('=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+');
+    return movies;
+  }
+
+  int getInt(){
+    return 20;
+  }
+
   void addVisualization(
     ValueKey speedDialChildKey,
     Map<String, dynamic> movieDetails, 
@@ -80,7 +112,7 @@ class DatabaseService {
     Location? location,
     MovieLanguage? audioLanguage, 
     MovieLanguage? substitlesLanguage,
-    [DateTime? selectedDateTime]
+    int? selectedDateTime
   ) async {
     final db = await database;
     await db.insert(
@@ -89,6 +121,7 @@ class DatabaseService {
         _watchedMoviesTitleColumnName: movieDetails['title'],
         _watchedMoviesYearColumnName: int.parse(movieDetails['release_date'].substring(0,4)),
         _watchedMoviesMovieDbIdColumnName: movieDetails['id'],
+        _watchedMoviesPosterPathColumnName: movieDetails['poster_path'],
       },
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
@@ -99,25 +132,11 @@ class DatabaseService {
           whereArgs: [movieDetails['id'],],
         );
 
-    int dateTime;
-    if (speedDialChildKey.value == 'just_started' ) {
-      dateTime = DateTime.now().millisecondsSinceEpoch;
-      print('JUST STARTED WATCHING THE MOVIE');
-    }
-    else if (speedDialChildKey.value == 'just_finished') {
-      dateTime = (DateTime.now().millisecondsSinceEpoch - movieDetails['runtime']*60*1000).toInt();
-      print('JUST FINISHED WATCHING THE MOVIE');
-    }
-    else {
-      dateTime = selectedDateTime!.millisecondsSinceEpoch;
-      print('JUST ADDED A NEW MOVIE TO MY VISUALIZATIONS LIST');
-    }
-
     await db.insert(
       _visualizationsTableName,
       {
         _visualizationsMovieIdColumnName: movieId[0]['id'],
-        _visualizationsDatetimeWatchedColumnName: dateTime,
+        _visualizationsDatetimeWatchedColumnName: selectedDateTime,
         _visualizationsPlatformColumnName: platform?.label,
         _visualizationsScreenTypeColumnName: screenType?.label,
         _visualizationsLocationColumnName: location?.label,
@@ -126,9 +145,31 @@ class DatabaseService {
       }
     );
 
-    final data = await db.query(_watchedMoviesTableName);
-    final visData = await db.query(_visualizationsTableName);
-    print(data);
-    print(visData);
+    // final data = await db.query(_watchedMoviesTableName);
+    // final visData = await db.query(_visualizationsTableName);
+    // print(data);
+    // print(visData);
+  }
+
+  void removeVisualization(int movieId, int visualizationId) async {
+    final db = await database;
+    await db.delete(_visualizationsTableName,
+      where: '$_visualizationsIdColumnName = ?',
+      whereArgs: [visualizationId]
+    );
+
+    final numVisList = await db.query(_visualizationsTableName,
+      columns: ['COUNT(*) as num_vis'],
+      where: '$_visualizationsMovieIdColumnName = ?',
+      whereArgs: [movieId]
+    );
+    print('NUMBER OF VISUALIZATIONS: ${numVisList[0]['num_vis']}');
+
+    if (numVisList[0]['num_vis'] == 0) {
+      await db.delete(_watchedMoviesTableName,
+        where: '$_watchedMoviesIdColumnName = ?',
+        whereArgs: [movieId]
+      );
+    }
   }
 }

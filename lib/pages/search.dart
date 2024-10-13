@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kino_byte/pages/debouncer.dart';
 import 'package:kino_byte/movie_info.dart';
+import 'package:kino_byte/pages/movie.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -62,7 +63,11 @@ class _SearchPageState extends State<SearchPage> {
               setState(() {});
             });
           },
-        )
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white,),
+          onPressed: () => Navigator.pop(context, true),
+        ),
       ),
       body: movies == null
       ? const Center(child: CircularProgressIndicator())
@@ -80,7 +85,7 @@ class _SearchPageState extends State<SearchPage> {
                 leading: SizedBox(
                   height: 100.0,
                   child: Image.network(
-                        'https://image.tmdb.org/t/p/original${movies?[index].imageUrl}',
+                        'https://image.tmdb.org/t/p/w200${movies?[index].imageUrl}',
                         fit: BoxFit.fitHeight,),
                 ),
                 title: Text('${movies![index].title}${movies![index].year.length >= 4   // Display movie title and year if available
@@ -90,13 +95,16 @@ class _SearchPageState extends State<SearchPage> {
                     color: Colors.white,
                   )),
                 minTileHeight: 100.0,
-                onTap: () {
-                  Navigator.pushReplacementNamed(context, '/movie', arguments:{
-                    'movie_id': movies![index].movieId,
-                    'title': movies![index].title,
-                    'release_date': movies![index].year,
-                    });
-                    print('THE MOVIE YEAR IS: ${movies![index].year}');
+                onTap: () async {
+                  await Navigator.pushNamed(
+                    context,
+                    '/movie',
+                    arguments: {
+                      'movie_id': movies![index].movieId,
+                      'title': movies![index].title,
+                      'release_date': movies![index].year,
+                    }
+                  );
                 },
               )
             ),

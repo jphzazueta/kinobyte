@@ -1,11 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:kino_byte/helpers/custom_alert_dialog.dart';
-import 'package:kino_byte/movie_info.dart';
+// import 'package:kino_byte/movie_info.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:kino_byte/helpers/enums.dart';
 import 'package:kino_byte/services/databaseService.dart';
-import 'package:kino_byte/helpers/custom_drop_down_menu.dart';
+// import 'package:kino_byte/helpers/custom_drop_down_menu.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -42,7 +42,12 @@ class MovieScaffold extends StatelessWidget {
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
-        )
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white,),
+          onPressed: () => Navigator.pop(context, true),
+        ),
+          // onPressed: () => setState(() {}),
       ),
       body: body,
       floatingActionButton: floatingActionButton,
@@ -137,7 +142,6 @@ class _MovieState extends State<Movie> {
       future: fetchMovieWithId(movieData['movie_id']),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting){
-          // debugPrint('LOADING......................');
           return MovieScaffold(
             movieData: movieData, 
             body: const Center(child: CircularProgressIndicator()),
@@ -180,6 +184,7 @@ class _MovieState extends State<Movie> {
                     ),
                   onTap: () {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
+                      int selectedDateTime = DateTime.now().millisecondsSinceEpoch;
                       showDialog(
                         context: context,
                         builder: (BuildContext context) => CustomAlertDialog(
@@ -190,7 +195,8 @@ class _MovieState extends State<Movie> {
                           selectedScreenType: selectedScreenType, 
                           selectedLocation: selectedLocation,
                           selectedAudioLanguage: selectedAudioLanguage, 
-                          selectedSubstitlesLanguage: selectedSubstitlesLanguage
+                          selectedSubstitlesLanguage: selectedSubstitlesLanguage,
+                          selectedDateTime: selectedDateTime,
                         ),
                       );
                     });
@@ -204,6 +210,7 @@ class _MovieState extends State<Movie> {
                     ),
                   onTap: () {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
+                      int selectedDateTime = (DateTime.now().millisecondsSinceEpoch - movieDetails[0]['runtime']*60*1000).toInt();
                       showDialog(
                         context: context,
                         builder: (BuildContext context) => CustomAlertDialog(
@@ -215,6 +222,7 @@ class _MovieState extends State<Movie> {
                           selectedLocation: selectedLocation,
                           selectedAudioLanguage: selectedAudioLanguage, 
                           selectedSubstitlesLanguage: selectedSubstitlesLanguage,
+                          selectedDateTime: selectedDateTime,
                         ),
                       );
                     });
@@ -236,9 +244,12 @@ class _MovieState extends State<Movie> {
                       print('SELECTED DATE TIME: $selectedDate + $selectedTime');
 
                       if (selectedTime == null) return;
-                      DateTime selectedDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute);
+                      int selectedDateTime = DateTime(
+                        selectedDate.year, selectedDate.month, selectedDate.day, 
+                        selectedTime.hour, selectedTime.minute).millisecondsSinceEpoch;
 
                       showDialog(
+                        // ignore: use_build_context_synchronously
                         context: context,
                         builder: (BuildContext context) => CustomAlertDialog(
                           valueKey: const ValueKey('another_time'),
@@ -275,7 +286,7 @@ class _MovieState extends State<Movie> {
                           SizedBox(
                             height: 250.0,
                             child: Image.network(
-                              'https://image.tmdb.org/t/p/original${movieDetails[0]['poster_path']}'
+                              'https://image.tmdb.org/t/p/w500${movieDetails[0]['poster_path']}'
                             ),
                           ),
                           const SizedBox(width: 20.0),
