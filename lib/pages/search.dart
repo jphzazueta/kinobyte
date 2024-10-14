@@ -84,9 +84,9 @@ class _SearchPageState extends State<SearchPage> {
               child: ListTile(
                 leading: SizedBox(
                   height: 100.0,
-                  child: Image.network(
-                        'https://image.tmdb.org/t/p/w200${movies?[index].imageUrl}',
-                        fit: BoxFit.fitHeight,),
+                  child: (movies?[index].imageUrl != null)
+                    ? Image.network('https://image.tmdb.org/t/p/w200${movies?[index].imageUrl}',fit: BoxFit.fitHeight,)
+                    : Image.asset('assets/poster_placeholder.png'),
                 ),
                 title: Text('${movies![index].title}${movies![index].year.length >= 4   // Display movie title and year if available
                             ? ' (${movies![index].year.substring(0,4)})'

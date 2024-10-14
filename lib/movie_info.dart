@@ -2,7 +2,7 @@ class MovieInfo {
   String title;
   int movieId;
   String year;
-  String imageUrl;
+  String? imageUrl;
 
   MovieInfo({
     required this.title, 
@@ -16,7 +16,7 @@ class MovieInfo {
       title: json['title'],
       year: json['release_date'] ?? '',
       movieId: json['id'],
-      imageUrl: json['poster_path'] ?? '/865DntZzOdX6rLMd405R0nFkLmL.jpg',
+      imageUrl: json['poster_path'],
     );
   }
 }

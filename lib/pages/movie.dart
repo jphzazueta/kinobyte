@@ -160,6 +160,7 @@ class _MovieState extends State<Movie> {
         }
         else if (snapshot.hasData){
           final movieDetails = snapshot.data;
+          print('THE POSTER PATH IS: ${movieDetails![0]['poster_path']}');
           String directors= movieDetails![1]['crew']    // Get the director(s) of the movie and format it as a String
                             .where((person) => person['job'] == 'Director')
                             .map((person) => person['name'])
@@ -285,9 +286,9 @@ class _MovieState extends State<Movie> {
                         children: [
                           SizedBox(
                             height: 250.0,
-                            child: Image.network(
-                              'https://image.tmdb.org/t/p/w500${movieDetails[0]['poster_path']}'
-                            ),
+                            child: (movieDetails[0]['poster_path'] != null) ? Image.network(
+                              'https://image.tmdb.org/t/p/w500${movieDetails[0]['poster_path']}')
+                              : Image.asset('assets/poster_placeholder.png'),
                           ),
                           const SizedBox(width: 20.0),
                           Expanded(

@@ -10,7 +10,7 @@ void main() => runApp(MaterialApp(
       // '/': (context) => Loading(),
       '/': (context) => const Home(),
       '/search': (context) => const SearchPage(),
-      '/movie': (context) => Movie(),
+      '/movie': (context) => const Movie(),
     }
   ));
 
