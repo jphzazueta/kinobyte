@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Loading extends StatefulWidget {
+  const Loading({super.key});
+
   // const Loading({super.key});
 
   @override

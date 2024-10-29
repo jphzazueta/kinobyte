@@ -161,7 +161,7 @@ class _MovieState extends State<Movie> {
         else if (snapshot.hasData){
           final movieDetails = snapshot.data;
           print('THE POSTER PATH IS: ${movieDetails![0]['poster_path']}');
-          String directors= movieDetails![1]['crew']    // Get the director(s) of the movie and format it as a String
+          String directors= movieDetails[1]['crew']    // Get the director(s) of the movie and format it as a String
                             .where((person) => person['job'] == 'Director')
                             .map((person) => person['name'])
                             .toString();

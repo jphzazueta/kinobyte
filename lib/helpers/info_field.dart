@@ -13,22 +13,22 @@ class InfoField extends StatelessWidget {
     required this.fieldData
   });
 
-  Padding movieField(String fieldName, String fieldData) {   // For displaying field with the name bold and the data normal weight
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 3.0),
-      child: RichText(text: 
-        TextSpan(
-          style: const TextStyle(
-            color: Colors.white,
-          ),
-          children: [
-            TextSpan(text: '$fieldName: ',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              )),
-            TextSpan(text: fieldData)])),
-    );
-  } 
+  // Padding movieField(String fieldName, String fieldData) {   // For displaying field with the name bold and the data normal weight
+  //   return Padding(
+  //     padding: const EdgeInsets.only(bottom: 3.0),
+  //     child: RichText(text: 
+  //       TextSpan(
+  //         style: const TextStyle(
+  //           color: Colors.white,
+  //         ),
+  //         children: [
+  //           TextSpan(text: '$fieldName: ',
+  //             style: const TextStyle(
+  //               fontWeight: FontWeight.bold,
+  //             )),
+  //           TextSpan(text: fieldData)])),
+  //   );
+  // } 
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +41,19 @@ class InfoField extends StatelessWidget {
           ),
           children: [
             TextSpan(text: '$fieldName: ',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-              )),
-            TextSpan(text: fieldData)])),
+                color: Colors.grey[300],
+                fontSize: 13,
+            )),
+            TextSpan(text: fieldData,
+              style: TextStyle(
+                color: Colors.grey[300],
+                fontSize: 13,
+            ))
+          ]
+        )
+      ),
     );
   }
 }

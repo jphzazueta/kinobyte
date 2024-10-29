@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_byte/pages/debouncer.dart';
 import 'package:kino_byte/movie_info.dart';
-import 'package:kino_byte/pages/movie.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -102,7 +101,7 @@ class _SearchPageState extends State<SearchPage> {
                     arguments: {
                       'movie_id': movies![index].movieId,
                       'title': movies![index].title,
-                      'release_date': movies![index].year,
+                      // 'release_date': movies![index].year,
                     }
                   );
                 },
