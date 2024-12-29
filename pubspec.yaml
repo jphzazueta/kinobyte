@@ -97,6 +97,9 @@ flutter:
     - family: NewsGothic
       fonts:
       - asset: assets/News_Gothic_Bold.ttf
+    - family: ConcertOne
+      fonts:
+      - asset: assets/ConcertOne-Regular.ttf
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

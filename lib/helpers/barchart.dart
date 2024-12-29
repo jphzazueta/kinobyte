@@ -17,11 +17,7 @@ class _BarChart extends StatelessWidget {
     for (var item in chartData) {
       if (item['movies_watched'] > maxY) maxY = item['movies_watched'].toDouble();
     }
-    maxY = maxY * 1.15; // Give max value some room for label
-    print(maxY);
-    
-
-    // print(chartData);
+    maxY = maxY * 1.15; // Give max value some room for label    
     return BarChart(
       BarChartData(
         barTouchData: barTouchData,
@@ -31,7 +27,6 @@ class _BarChart extends StatelessWidget {
         gridData: const FlGridData(show: false),
         alignment: BarChartAlignment.spaceAround,
         maxY: maxY,
-        // backgroundColor: Color.fromARGB(255, 23, 23, 70),
       )
     );
   }

@@ -160,9 +160,6 @@ class _HomeState extends State<Home> {
                                   icon: Icons.delete,
                                   backgroundColor: Colors.red,
                                   onPressed: ((context) {
-                                    // print('---------------- MOVIE DELETED -------------------');
-                                    // print('MOVIE ID: ${watchedMoviesList![index]['movie_id']} ${watchedMoviesList[index]['movie_id'].runtimeType}');
-                                    // print('VISUALIZATION ID: ${watchedMoviesList[index]['vis_id']} ${watchedMoviesList[index]['vis_id'].runtimeType}');
                                     _databaseService.removeVisualization(watchedMoviesList![index]['movie_id'], watchedMoviesList[index]['vis_id']);
                                     _refreshMoviesList();
                                   })

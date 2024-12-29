@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kino_byte/pages/debouncer.dart';
-import 'package:kino_byte/movie_info.dart';
+import 'package:kino_byte/helpers/debouncer.dart';
+import 'package:kino_byte/helpers/movie_info.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -24,9 +24,7 @@ class _SearchPageState extends State<SearchPage> {
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
-      // print(jsonResponse);
       final List movies = jsonResponse['results'];
-      // print(movies);
 
       // Convert each item in the list to a Movie object
       return movies.map((movie) => MovieInfo.fromJson(movie)).toList();
@@ -58,7 +56,6 @@ class _SearchPageState extends State<SearchPage> {
           onChanged: (query) {
             _debouncer.run(() async {
               movies = await fetchMovies(query);
-              // print('The number of movies is: ${movies?.length}');
               setState(() {});
             });
           },
@@ -73,7 +70,6 @@ class _SearchPageState extends State<SearchPage> {
       : ListView.builder(
         itemCount: movies?.length ?? 0,
         itemBuilder: (context, index) {
-          // print('${movies![index].title} (${movies![index].year})');
           return Padding(
             padding: const EdgeInsets.all(2.0),
             child: Container(

@@ -64,6 +64,7 @@ class _StatsPageState extends State<StatsPage> {
                         fontSize: 30,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 5,
+                        fontFamily: 'ConcertOne',
                       )
                     ),
                   ),
@@ -163,6 +164,7 @@ class _StatsPageState extends State<StatsPage> {
                         fontSize: 30,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 5,
+                        fontFamily: 'ConcertOne',
                       )
                     ),
                   ),
@@ -173,13 +175,10 @@ class _StatsPageState extends State<StatsPage> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: const Color.fromARGB(255, 23, 23, 70),
-                        // color: Colors.black,
                       ),
                       child: ListView.builder(
                         itemCount: movieStats['top_movies'].length,
                         shrinkWrap: true,
-                        // physics: const NeverScrollableScrollPhysics(),
-                        // itemCount: 10,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
@@ -217,6 +216,7 @@ class _StatsPageState extends State<StatsPage> {
                         fontSize: 30,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 5,
+                        fontFamily: 'ConcertOne',
                       )
                     ),
                   ),
@@ -224,7 +224,6 @@ class _StatsPageState extends State<StatsPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: const Color.fromARGB(255, 23, 23, 70),
-                      // color: Colors.black,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),

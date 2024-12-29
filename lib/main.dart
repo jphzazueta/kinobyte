@@ -10,20 +10,11 @@ void main() {
     runApp(MaterialApp(
       initialRoute: '/',
       routes: {
-        // '/': (context) => Loading(),
         '/': (context) => const Home(),
         '/search': (context) => const SearchPage(),
         '/movie': (context) => const Movie(),
-      }
+      },
+      debugShowCheckedModeBanner: false,
     ))
   );
-  // runApp(MaterialApp(
-  //   initialRoute: '/',
-  //   routes: {
-  //     // '/': (context) => Loading(),
-  //     '/': (context) => const Home(),
-  //     '/search': (context) => const SearchPage(),
-  //     '/movie': (context) => const Movie(),
-  //   }
-  // ));
 }

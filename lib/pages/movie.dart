@@ -10,13 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Movie extends StatefulWidget {
-  const Movie({super.key});
-
-  @override
-  State<Movie> createState() => _MovieState();
-}
-
 class MovieScaffold extends StatelessWidget {
 
   final Map<String, dynamic> movieData;
@@ -55,6 +48,13 @@ class MovieScaffold extends StatelessWidget {
   }
 }
 
+class Movie extends StatefulWidget {
+  const Movie({super.key});
+
+  @override
+  State<Movie> createState() => _MovieState();
+}
+
 class _MovieState extends State<Movie> {
   final DatabaseService _databaseService = DatabaseService.instance;
 
@@ -71,7 +71,6 @@ class _MovieState extends State<Movie> {
     final urlMovie = Uri.parse('$apiUrl/movie/${movieId.toString()}?api_key=$apiKey&language=en-US');
     final response = await http.get(urlMovie);
 
-    // final urlCast = Uri.parse('$apiUrl/${movieId.toString()}?api_key=$apiKey&language=en-US');
     final urlCast = Uri.parse('$apiUrl/movie/${movieId.toString()}/credits?api_key=$apiKey&language=en-US');
     final responseCast = await http.get(urlCast);
 
@@ -96,7 +95,8 @@ class _MovieState extends State<Movie> {
     }
   }
 
-  Padding movieField(String fieldName, String fieldData) {   // For displaying field with the name bold and the data normal weight
+  // For displaying field with the name bold and the data normal weight
+  Padding movieField(String fieldName, String fieldData) {   
     return Padding(
       padding: const EdgeInsets.only(bottom:3.0),
       child: RichText(text: 
@@ -160,8 +160,7 @@ class _MovieState extends State<Movie> {
         }
         else if (snapshot.hasData){
           final movieDetails = snapshot.data;
-          print('THE POSTER PATH IS: ${movieDetails![0]['poster_path']}');
-          String directors= movieDetails[1]['crew']    // Get the director(s) of the movie and format it as a String
+          String directors= movieDetails![1]['crew']    // Get the director(s) of the movie and format it as a String
                             .where((person) => person['job'] == 'Director')
                             .map((person) => person['name'])
                             .toString();
@@ -242,7 +241,6 @@ class _MovieState extends State<Movie> {
 
                       // ignore: use_build_context_synchronously
                       TimeOfDay? selectedTime = await _selectTime(context);
-                      print('SELECTED DATE TIME: $selectedDate + $selectedTime');
 
                       if (selectedTime == null) return;
                       int selectedDateTime = DateTime(

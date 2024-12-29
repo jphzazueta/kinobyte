@@ -77,11 +77,9 @@ class DatabaseService {
       databasePath,
       version: 1,
       onCreate: (db, version) {
-        print('DATABASE ONCREATE ACTIVATED');
         _createDatabase(db);
       },
       onOpen: (db) {
-        print('DATABASE ONOPEN ACTIVADED');
       },
     );
     return database;
@@ -109,8 +107,6 @@ class DatabaseService {
       ORDER BY $_visualizationsTableName.$_visualizationsDatetimeWatchedColumnName DESC
       '''
       );
-    // print(movies);
-    print('=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+');
     return movies;
   }
 
@@ -128,8 +124,6 @@ class DatabaseService {
       = $_visualizationsTableName.$_visualizationsMovieIdColumnName
       '''
     );
-
-    // print(movieStats);
 
     movieStats[0].forEach((key, value) => stats[key] = value);
 
@@ -161,19 +155,7 @@ class DatabaseService {
       '''
     );
 
-    // List<int> years = List<int>.generate(moviesPerYear[0]['max_year'] - moviesPerYear[0]['min_year'] + 1, (index) => moviesPerYear[0]['min_year'] + index);
-
-    // print(years);
-
-    // stats['years_watched'] = years;
-
-    // print(stats);
-
-    // moviesPerYear.forEach((key, value) => stats[key].add)
-
     stats['movies_per_year'] = moviesPerYear;
-
-    // insertDataFromJson('movies_watched/movies_watched.json');
 
     return stats;
   }
@@ -224,11 +206,6 @@ class DatabaseService {
     } catch (e){
       print(e);
     }
-
-    // final data = await db.query(_watchedMoviesTableName);
-    // final visData = await db.query(_visualizationsTableName);
-    // print(data);
-    // print(visData);
   }
 
   void removeVisualization(int movieId, int visualizationId) async {
@@ -243,7 +220,6 @@ class DatabaseService {
       where: '$_visualizationsMovieIdColumnName = ?',
       whereArgs: [movieId]
     );
-    print('NUMBER OF VISUALIZATIONS: ${numVisList[0]['num_vis']}');
 
     if (numVisList[0]['num_vis'] == 0) {
       await db.delete(_watchedMoviesTableName,
@@ -272,7 +248,6 @@ class DatabaseService {
   Future<void> insertDataFromJson (String jsonPath) async {
     final String response = await rootBundle.loadString(jsonPath);
     final data = await json.decode(response);
-    // print('DATA LENGTH = ${data.length}');
     data.forEach((movie) async {
       dynamic dateTimeWatched;
       try{
@@ -281,7 +256,6 @@ class DatabaseService {
         dateTimeWatched = DateFormat('yyyy-MM-dd').parse(movie['watchedDate']);
       }
       Map<String, dynamic> movieDetails = await fetchMovieWithId(movie['movie']['tmdbId']);
-      if (movie['movie']['name'] == 'Hacksaw Ridge') print(movie['movie']['name']);
       addVisualization(
         const ValueKey('another_time'), 
         movieDetails, 
