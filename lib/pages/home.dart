@@ -19,7 +19,7 @@ class _HomeState extends State<Home> {
 
   Icon customIcon = const Icon(Icons.search);
   Widget customSearchBar = const Text('My Watched Movies',
-                             style: TextStyle(
+                             style: TextStyle(r
                               color: Colors.white,
                                 fontWeight: FontWeight.bold,));
 
